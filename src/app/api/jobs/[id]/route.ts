@@ -3,10 +3,11 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(req: NextRequest, context: { params: { id: string } }) {
   try {
     const body = await req.json();
-    const id = req.nextUrl.pathname.split("/").pop();
+    // const id = req.nextUrl.pathname.split("/").pop();
+    const id = context.params.id;
 
     if (!id) {
       return NextResponse.json({ error: "Job ID is required" }, { status: 400 });
