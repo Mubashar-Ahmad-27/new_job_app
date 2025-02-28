@@ -56,20 +56,18 @@ export const authOptions: NextAuthOptions = {
     ],
     callbacks: {
         async jwt({ token, user }) {
-            if (user) {
-                console.log("JWT User Data:", user);
-                token.role = user.role; 
+            if (user && "role" in user) { 
+              token.role = user.role;
             }
             return token;
-        },
-        async session({ session, token }) {
-            console.log("Session Data Before:", session);
+          },
+          async session({ session, token }) {
             if (session.user) {
-                session.user.role = token.role; 
+              session.user.role = token.role as string | undefined
             }
-            console.log("Final Session Data:", session);
             return session;
-        },
+          }
+          ,
         async redirect({ url, baseUrl }) {
             return url.startsWith(baseUrl) ? url : baseUrl;
         },

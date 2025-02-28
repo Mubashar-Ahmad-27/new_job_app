@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import Header from "@/app/components/Header/Page";
-import JobApplicationForm from "../JobApplicationForm/page";
+import JobApplicationForm from "../JobApplicationForm/JobApplicationForm";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { FaArrowRight, FaDollarSign, FaCity } from "react-icons/fa";
@@ -28,11 +28,16 @@ const GetData: React.FC = () => {
   const [selectedJob, setSelectedJob] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState({ title: "", city: "" })
 
-  const filteredJobs = jobs?.filter(
-    (job) =>
+  const filteredJobs = jobs?.filter((job) =>
       job.title.toLowerCase().includes(searchQuery.title.toLowerCase()) &&
       job.city.toLowerCase().includes(searchQuery.city.toLowerCase())
-  );
+  )
+
+  useEffect(() => {
+    if (filteredJobs?.length === 0 && (searchQuery.title || searchQuery.city) !== "") {
+      alert("No jobs found");
+    }
+  }, [filteredJobs, searchQuery])
 
   if (isLoading)
     return <p className="text-center font-bold mt-2 text-3xl">Loading...</p>
@@ -47,7 +52,9 @@ const GetData: React.FC = () => {
         JOB LISTING
       </h2>
 
-      {filteredJobs?.length === 0 && (searchQuery.title || searchQuery.city) !== "" && alert("No jobs found")}
+      {filteredJobs?.length === 0 && (searchQuery.title || searchQuery.city) !== "" && (
+              <p className="text-red-500 text-center">No jobs found.</p> 
+      )}
 
       <div className="mt-10 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4">
         {filteredJobs?.map((job) => (

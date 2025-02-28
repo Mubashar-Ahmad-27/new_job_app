@@ -2,12 +2,12 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import CreatePostForm from "../components/CreatePostForm/page";
-import JobTable from "../components/JobTable/page";
-import EditJobForm from "../components/EditJobForm/page";
+import CreatePostForm from "../components/CreatePostForm/CreatePostForm";
+import JobTable from "../components/JobTable/JobTable";
+import EditJobForm from "../components/EditJobForm/EditJobForm";
 
 interface Job {
-  id: string;
+  id: number;
   title: string;
   description: string;
   salary: string;
@@ -23,8 +23,10 @@ const DashboardPage: React.FC = () => {
 
   const fetchJobs = async () => {
     try {
-      const res = await axios.get("/api/jobs")
-      setJobs(res.data)
+      const response = await axios.get("/api/jobs");
+      const jobs = response.data.jobs.map((job: any) => ({...job,id: Number(job.id), }))
+       setJobs(jobs);
+
     } catch (error) {
       console.error("Error fetching jobs:", error)
     }
@@ -54,14 +56,15 @@ const DashboardPage: React.FC = () => {
     }
   }
 
-  const handleDeleteJob = async (id: string) => {
+  const handleDeleteJob = async (id: number) => { 
     try {
-      await axios.delete(`/api/jobs/${id}`)
-      setJobs(jobs.filter((job) => job.id !== id))
+      await axios.delete(`/api/jobs/${id}`);
+      setJobs(jobs.filter((job) => job.id !== id));
     } catch (error) {
-      console.error("Error deleting job:", error)
+      console.error("Error deleting job:", error);
     }
-  }
+  };
+  
 
   return (
     <div className="bg-teal-800 min-h-screen p-6">
@@ -78,7 +81,10 @@ const DashboardPage: React.FC = () => {
         </button>
 
       {showForm && (<CreatePostForm onCreate={handleCreateJob} onClose={() => setShowForm(false)} />)}
-        {editJob && (<EditJobForm job={editJob} onEdit={handleEditJob} onClose={() => setEditJob(null)} />)}
+      {editJob && (
+  <EditJobForm  job={{ ...editJob, id: Number(editJob.id) }}  onEdit={handleEditJob} onClose={() => setEditJob(null)} />
+)}
+
       </div>
 
       <div className="mt-16">

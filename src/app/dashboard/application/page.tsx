@@ -1,5 +1,6 @@
 "use client";
 import axios from "axios";
+import { AxiosError } from "axios";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -23,8 +24,13 @@ const ApplicationsPage: React.FC = () => {
         console.log("Applications Data:", response.data)
         setApplications(response.data.applications)
       } catch (error) {
-        console.error("Error fetching applications:", error.response?.data || error)
-        alert("Failed to fetch applications. Check the console for details.")
+        const axiosError = error as AxiosError;
+      
+        console.error(
+          "Error fetching applications:",
+          axiosError.response?.data || axiosError.message
+        ); 
+        alert("Failed to fetch applications. Check the console for details.");
       }
     }
 
@@ -39,9 +45,14 @@ const ApplicationsPage: React.FC = () => {
       setApplications(applications.filter((app) => app.id !== id))
       alert("Application deleted successfully")
     } catch (error) {
-      console.error("Error deleting application:", error.response?.data || error)
-      alert("Failed to delete application.")
+      if (error instanceof Error) {
+        console.error("Error fetching applications:", error.message);
+      } else {
+        console.error("Unknown error:", error);
+      }
+      alert("Failed to fetch applications. Check the console for details.");
     }
+    
   }
 
   return (

@@ -3,11 +3,14 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function PUT(req: NextRequest, context: { params: { id: string } }) {
+export async function PUT(request: Request,
+  {params}: { params: Promise<{ id: string }>}
+) {
+  
   try {
-    const body = await req.json();
+    const body = await request.json();
     // const id = req.nextUrl.pathname.split("/").pop();
-    const id = context.params.id;
+    const { id } =await params; 
 
     if (!id) {
       return NextResponse.json({ error: "Job ID is required" }, { status: 400 });
@@ -25,9 +28,12 @@ export async function PUT(req: NextRequest, context: { params: { id: string } })
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest,
+  {params}: { params: Promise<{ id: string }>}
+  ) {
   try {
-    const id = req.nextUrl.pathname.split("/").pop();
+    // const id = req.nextUrl.pathname.split("/").pop();
+    const {id}=await params
 
     if (!id) {
       return NextResponse.json({ error: "Job ID is required" }, { status: 400 });

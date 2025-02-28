@@ -73,7 +73,12 @@ export async function DELETE(req: Request) {
 
     return NextResponse.json({ message: "Application deleted successfully" }, { status: 200 });
   } catch (error) {
-    console.error("Error deleting application:", error);
-    return NextResponse.json({ error: "Failed to delete application" }, { status: 500 });
+    if (error instanceof Error) {
+      console.error("Error fetching applications:", error.message);
+    } else {
+      console.error("Unknown error:", error);
+    }
+    alert("Failed to fetch applications. Check the console for details.");
   }
+  
 }
