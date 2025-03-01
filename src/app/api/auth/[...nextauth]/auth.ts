@@ -5,7 +5,6 @@ import { db } from "@/libs/prismadb";
 import { compare } from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
-    adapter: PrismaAdapter(db),
     session: {
         strategy: "jwt",
     },
@@ -25,7 +24,7 @@ export const authOptions: NextAuthOptions = {
 
                 if (!credentials?.email || !credentials?.password) {
                     console.log("Missing Email or Password");
-                    throw new Error("Missing Email or Password");
+                    return null;
                 }
 
                 const existingUser = await db.user.findUnique({
@@ -34,15 +33,13 @@ export const authOptions: NextAuthOptions = {
 
                 if (!existingUser) {
                     console.log("User not found");
-                    throw new Error("User Not Found");
-                }
+                    return null;                }
 
                 const passwordMatch = await compare(credentials.password, existingUser.password);
 
                 if (!passwordMatch) {
                     console.log("Password Not Matched");
-                    throw new Error("Password Not Matched");
-                }
+                    return null;                }
 
                 console.log("Successfully Logged In:", existingUser.email);
 
