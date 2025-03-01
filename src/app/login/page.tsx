@@ -40,22 +40,30 @@ const LoginPage: React.FC = () => {
   });
 
   const onSubmit = async (data: { email: string; password: string }) => {
-    setLoading(true); 
+    setLoading(true);
     const signInData = await signIn("credentials", {
       email: data.email,
       password: data.password,
       redirect: false, 
     });
-
+  
     if (signInData?.error) {
       alert("Authentication failed: " + signInData.error);
     } else {
-      router.refresh(); 
+      
+      const sessionResponse = await fetch("/api/auth/session");
+      const sessionData = await sessionResponse.json();
+  
+      if (sessionData?.user?.role === "admin") {
+        router.replace("/dashboard")
+      } else {
+        router.replace("/jobPage")
+      }
     }
-
-    setLoading(false); 
+  
+    setLoading(false);
   };
-
+  
   return (
     <div className="flex justify-center items-center min-h-screen bg-cyan-700">
       <div className="bg-gray-900 p-6 rounded-lg shadow-lg w-96">

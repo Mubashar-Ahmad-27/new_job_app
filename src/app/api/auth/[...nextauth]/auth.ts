@@ -49,26 +49,28 @@ export const authOptions: NextAuthOptions = {
                 return {
                     id: `${existingUser.id}`,
                     email: existingUser.email,
-                    role: existingUser.role || "user", 
+                    role: existingUser.role || "user",
                 };
             },
         }),
     ],
     callbacks: {
         async jwt({ token, user }) {
-            if (user && "role" in user) { 
-              token.role = user.role;
+            if (user) {
+                token.role = user.role; 
             }
             return token;
-          },
-          async session({ session, token }) {
+        },
+        async session({ session, token }) {
             if (session.user) {
-              session.user.role = token.role as string | undefined
+                session.user.role = token.role as string; 
             }
             return session;
-          }
-          ,
+        },
+    
         async redirect({ url, baseUrl }) {
+            if (url === "/login") return baseUrl; 
+
             return url.startsWith(baseUrl) ? url : baseUrl;
         },
     },

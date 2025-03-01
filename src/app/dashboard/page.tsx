@@ -23,19 +23,27 @@ const DashboardPage: React.FC = () => {
 
   const fetchJobs = async () => {
     try {
-      const response = await axios.get("/api/jobs");
-      const jobs = response.data.jobs.map((job: any) => ({...job,id: Number(job.id), }))
-       setJobs(jobs);
-
+      const response = await fetch('/api/jobs')
+      if (!response.ok) {
+        throw new Error("Failed to fetch jobs")
+      }
+      const data = await response.json()
+      return Array.isArray(data) ? data : []
     } catch (error) {
       console.error("Error fetching jobs:", error)
+      return []
     }
   };
-
+  
   useEffect(() => {
-    fetchJobs()
+    const loadJobs = async () => {
+      const jobsData = await fetchJobs();
+      setJobs(jobsData)
+    };
+  
+    loadJobs();
   }, []);
-
+  
   const handleCreateJob = async (job: Omit<Job, "id">) => {
     try {
       const res = await axios.post("/api/jobs", job)
